@@ -1,16 +1,3 @@
-import * as Location from "expo-location";
-
-const getLocation = async () => {
-    // destructures status from response to async function
-    let { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== "granted") {
-        setErrorMsg("Permission to access location was denied");
-        return;
-    }
-    let loc = await Location.getLastKnownPositionAsync({});
-    return loc;
-};
-
 const getWeather = async (location, setterFunction) => {
     const url = "https://weather-api-server.herokuapp.com/weather";
     // console.log(JSON.stringify(location));
@@ -43,4 +30,4 @@ const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
 };
 
-export { getLocation, getWeather, wait };
+export { getWeather, wait };

@@ -9,12 +9,24 @@ import {
     RefreshControl,
     Image,
 } from "react-native";
-import { getLocation, getWeather, wait } from "./functions";
+import * as Location from "expo-location";
+import { getWeather, wait } from "./functions";
 
 export default function App() {
     const [weather, setWeather] = useState(null);
     const [errorMsg, setErrorMsg] = useState(null);
     const [refreshing, setRefreshing] = useState(false);
+
+    const getLocation = async () => {
+        // destructures status from response to async function
+        let { status } = await Location.requestForegroundPermissionsAsync();
+        if (status !== "granted") {
+            setErrorMsg("Permission to access location was denied");
+            return;
+        }
+        let loc = await Location.getLastKnownPositionAsync({});
+        return loc;
+    };
 
     useEffect(async () => {
         const loc = await getLocation();
