@@ -11,15 +11,6 @@ const getWeather = async (location, setterFunction) => {
             body: JSON.stringify(location),
         });
         const data = await response.json();
-        console.log(data.city.name);
-        console.log(data.city.country);
-        data.list.forEach((item) => {
-            console.log(item.dt_txt);
-            console.log(item.weather[0].main);
-            console.log(item.weather[0].description);
-            console.log(item.weather[0].icon);
-            console.log(item.main.temp);
-        });
         setterFunction(data);
     } catch (error) {
         console.log(error);
@@ -30,4 +21,13 @@ const wait = (timeout) => {
     return new Promise((resolve) => setTimeout(resolve, timeout));
 };
 
-export { getWeather, wait };
+const getTime = (dt) => {
+    const date = new Date(dt * 1000);
+    let hours = date.getHours();
+    const AmPm = hours >= 12 ? "pm" : "am";
+    hours = hours % 12 || 12;
+    const totalDate = `${hours}${AmPm}`;
+    return totalDate;
+};
+
+export { getWeather, wait, getTime };
