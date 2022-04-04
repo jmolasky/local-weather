@@ -30,4 +30,19 @@ const getTime = (dt) => {
     return totalDate;
 };
 
-export { getWeather, wait, getTime };
+const getDay = (dt) => {
+    const weekday = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+    ];
+    const date = new Date(dt * 1000);
+    const day = weekday[date.getDay()];
+    return day;
+};
+
+export { getWeather, wait, getTime, getDay };

@@ -12,7 +12,8 @@ import {
     FlatList,
 } from "react-native";
 import * as Location from "expo-location";
-import { getWeather, wait, getTime } from "./functions";
+import { getWeather, wait, getTime, getDay } from "./functions";
+import CurrentWeather from "./CurrentWeather";
 
 export default function App() {
     const [address, setAddress] = useState(null);
@@ -27,7 +28,9 @@ export default function App() {
             setErrorMsg("Permission to access location was denied");
             return "not granted";
         }
-        let loc = await Location.getLastKnownPositionAsync({});
+        // faster but less accurate
+        // let loc = await Location.getLastKnownPositionAsync({});
+        let loc = await Location.getCurrentPositionAsync({});
         let address = await Location.reverseGeocodeAsync({
             latitude: loc.coords.latitude,
             longitude: loc.coords.longitude,
@@ -69,7 +72,7 @@ export default function App() {
                     style={styles.itemPhoto}
                     resizeMode="cover"
                 />
-                <Text>{item.temp} &#x2109;</Text>
+                <Text>{Math.round(item.temp)} &#x2109;</Text>
                 <Text>{item.weather[0].description}</Text>
             </View>
         );
@@ -77,15 +80,23 @@ export default function App() {
     const DailyListItem = ({ item }) => {
         return (
             <View style={styles.item}>
-                <Image
-                    source={{
-                        uri: `http://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`,
-                    }}
-                    style={styles.itemPhoto}
-                    resizeMode="cover"
-                />
-                <Text>{item.temp} &#x2109;</Text>
-                <Text>{item.weather[0].description}</Text>
+                <Text>{item.day}</Text>
+                <View style={styles.verticalItem}>
+                    <View style={styles.descContainer}>
+                        <Text>{item.weather[0].description}</Text>
+                    </View>
+                    <Image
+                        source={{
+                            uri: `http://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`,
+                        }}
+                        style={styles.itemPhoto}
+                        resizeMode="cover"
+                    />
+                    <View style={styles.highLow}>
+                        <Text>{Math.round(item.temp.max)} &#x2109;</Text>
+                        <Text>{Math.round(item.temp.min)} &#x2109;</Text>
+                    </View>
+                </View>
             </View>
         );
     };
@@ -93,13 +104,6 @@ export default function App() {
     let hourlyWeatherData;
     if (weather) {
         hourlyWeatherData = weather.hourly.map((item, index) => {
-            // const unixTime = item.dt;
-            // const date = new Date(unixTime * 1000);
-            // let hours = date.getHours();
-            // const AmPm = hours >= 12 ? "pm" : "am";
-            // hours = hours % 12 || 12;
-            // const totalDate = `${hours}${AmPm}`;
-
             return {
                 key: index,
                 date: getTime(item.dt),
@@ -114,7 +118,8 @@ export default function App() {
         dailyWeatherData = weather.daily.map((item, index) => {
             return {
                 key: index,
-                temp: item.temp.day,
+                day: getDay(item.dt),
+                temp: item.temp,
                 weather: item.weather,
             };
         });
@@ -137,18 +142,15 @@ export default function App() {
         <View style={styles.container}>
             <StatusBar style="auto" />
             <SafeAreaView style={{ flex: 1 }}>
-                {/* <ScrollView
-                    contentContainerStyle={styles.scrollView}
-                    refreshControl={
-                        <RefreshControl
-                            refreshing={refreshing}
-                            onRefresh={onRefresh}
-                        />
-                    }
-                > */}
-                <Text>{text}</Text>
+                <Text style={styles.city}>{text}</Text>
+                <CurrentWeather
+                    current={weather.current}
+                    daily={weather.daily[0]}
+                />
                 {weather && (
                     <SectionList
+                        refreshing={refreshing}
+                        onRefresh={onRefresh}
                         contentContainerStyle={{ paddingHorizontal: 10 }}
                         stickySectionHeadersEnabled={false}
                         sections={SECTIONS}
@@ -177,25 +179,24 @@ export default function App() {
                         }}
                     />
                 )}
-                {/* <Text style={styles.text}>{text}</Text> */}
-                {/* {weather && (
-                        <Image
-                            source={{
-                                uri: `http://openweathermap.org/img/wn/${weather.current.weather[0].icon}@2x.png`,
-                            }}
-                            style={{ width: 150, height: 150 }}
-                        />
-                    )}  */}
-                {/* </ScrollView> */}
             </SafeAreaView>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
+    city: {
+        fontSize: 36,
+        textAlign: "center",
+    },
     container: {
         flex: 1,
         backgroundColor: "#fff",
+    },
+    descContainer: {
+        width: 110,
+        borderWidth: 2,
+        borderColor: "green",
     },
     sectionHeader: {
         fontWeight: "800",
@@ -204,8 +205,17 @@ const styles = StyleSheet.create({
         marginTop: 20,
         marginBottom: 5,
     },
+    highLow: {
+        flexDirection: "row",
+        borderWidth: 2,
+        borderColor: "purple",
+        width: 120,
+        justifyContent: "space-between",
+    },
     item: {
         margin: 10,
+        borderWidth: 2,
+        borderColor: "red",
     },
     itemPhoto: {
         width: 75,
@@ -223,5 +233,16 @@ const styles = StyleSheet.create({
         backgroundColor: "#3ae9cf",
         alignItems: "center",
         justifyContent: "center",
+    },
+    verticalItem: {
+        width: "100%",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        borderWidth: 2,
+        borderColor: "blue",
+    },
+    weekday: {
+        marginBottom: 10,
     },
 });
