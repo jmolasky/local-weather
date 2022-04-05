@@ -26,7 +26,10 @@ Users can pull down to refresh the page, which triggers another location lookup/
 ## Unsolved Problems
 
 -   The API data only updates every 10 minutes, but I was unable to figure out how to only trigger another API call when the page is refreshed if a certain amount of time has elapsed.
+-   I was unable to get the border to show up under the sticky "Daily Forecast" header.
 
 ## Future Enhancements/Next Steps
 
 -   The ability to see different types of weather data on different pages
+-   Rendering additional data such as wind chill, wind speed, sunrise/sunset etc.
+-   A background image that changes based on the current weather
