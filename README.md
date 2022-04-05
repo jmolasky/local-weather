@@ -21,9 +21,7 @@ Users can pull down to refresh the page, which triggers another location lookup/
 
 ## Screenshots
 
-![Link](#)
-
-## Getting Started
+![The App Live](https://i.imgur.com/cFjNCkOl.png)
 
 ## Unsolved Problems
 

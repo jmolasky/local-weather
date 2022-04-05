@@ -2,7 +2,6 @@ import { useState, useEffect, useCallback } from "react";
 import { StatusBar } from "expo-status-bar";
 import {
     StyleSheet,
-    Text,
     View,
     SafeAreaView,
     SectionList,
@@ -11,8 +10,9 @@ import {
 } from "react-native";
 import * as Location from "expo-location";
 import { getWeather, wait, getTime, getDay } from "./functions";
-import CurrentWeather from "./CurrentWeather";
+import CurrentWeather from "./components/CurrentWeather";
 import colors from "./config/colors";
+import AppText from "./components/AppText";
 
 export default function App() {
     const [address, setAddress] = useState(null);
@@ -63,7 +63,7 @@ export default function App() {
     const HourlyListItem = ({ item }) => {
         return (
             <View style={styles.item}>
-                <Text>{item.date}</Text>
+                <AppText>{item.date}</AppText>
                 <Image
                     source={{
                         uri: `http://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`,
@@ -71,18 +71,18 @@ export default function App() {
                     style={styles.itemPhoto}
                     resizeMode="cover"
                 />
-                <Text>{Math.round(item.temp)} &#x2109;</Text>
-                <Text>{item.weather[0].description}</Text>
+                <AppText>{Math.round(item.temp)} &#x2109;</AppText>
+                <AppText>{item.weather[0].description}</AppText>
             </View>
         );
     };
     const DailyListItem = ({ item }) => {
         return (
             <View style={styles.item}>
-                <Text>{item.day}</Text>
+                <AppText>{item.day}</AppText>
                 <View style={styles.verticalItem}>
                     <View style={styles.descContainer}>
-                        <Text>{item.weather[0].description}</Text>
+                        <AppText>{item.weather[0].description}</AppText>
                     </View>
                     <Image
                         source={{
@@ -92,8 +92,10 @@ export default function App() {
                         resizeMode="cover"
                     />
                     <View style={styles.highLow}>
-                        <Text>{Math.round(item.temp.max)} &#x2109;</Text>
-                        <Text>{Math.round(item.temp.min)} &#x2109;</Text>
+                        <AppText>{Math.round(item.temp.max)} &#x2109;</AppText>
+                        <AppText style={styles.secondaryText}>
+                            {Math.round(item.temp.min)} &#x2109;
+                        </AppText>
                     </View>
                 </View>
             </View>
@@ -141,7 +143,7 @@ export default function App() {
         <View style={styles.container}>
             <StatusBar style="auto" />
             <SafeAreaView style={{ flex: 1 }}>
-                <Text style={styles.city}>{text}</Text>
+                <AppText style={styles.city}>{text}</AppText>
                 {weather && (
                     <>
                         <CurrentWeather
@@ -151,18 +153,26 @@ export default function App() {
                         <SectionList
                             refreshing={refreshing}
                             onRefresh={onRefresh}
-                            contentContainerStyle={{ paddingHorizontal: 10 }}
-                            stickySectionHeadersEnabled={false}
+                            contentContainerStyle={{
+                                paddingHorizontal: 10,
+                            }}
+                            // stickySectionHeadersEnabled={true}
                             sections={SECTIONS}
                             renderSectionHeader={({ section }) => (
                                 <>
-                                    <Text style={styles.sectionHeader}>
+                                    <AppText
+                                        style={[
+                                            styles.sectionHeader,
+                                            { zIndex: 1 },
+                                        ]}
+                                    >
                                         {section.title}
-                                    </Text>
+                                    </AppText>
                                     {section.horizontal ? (
                                         <FlatList
                                             horizontal
                                             data={section.data}
+                                            style={styles.horizontalList}
                                             renderItem={({ item }) => (
                                                 <HourlyListItem item={item} />
                                             )}
@@ -188,9 +198,6 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
-    primaryText: {
-        color: colors.primaryText,
-    },
     secondaryText: {
         color: colors.secondaryText,
     },
@@ -203,28 +210,22 @@ const styles = StyleSheet.create({
         backgroundColor: "#5ba9e1",
     },
     descContainer: {
-        width: 110,
-        borderWidth: 2,
-        borderColor: "green",
+        width: 120,
     },
     sectionHeader: {
-        fontWeight: "800",
-        fontSize: 18,
-        color: colors.primaryText,
-        marginTop: 20,
-        marginBottom: 5,
+        fontWeight: "700",
+        paddingTop: 10,
+        paddingBottom: 10,
+        backgroundColor: "#5ba9e1",
     },
     highLow: {
         flexDirection: "row",
-        borderWidth: 2,
-        borderColor: "purple",
         width: 120,
         justifyContent: "space-between",
     },
     item: {
         margin: 10,
-        borderWidth: 2,
-        borderColor: "red",
+        alignItems: "center",
     },
     itemPhoto: {
         width: 75,
@@ -235,7 +236,13 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        borderWidth: 2,
-        borderColor: "blue",
+        borderBottomWidth: 2,
+        borderBottomColor: colors.secondaryText,
+    },
+    horizontalList: {
+        borderTopWidth: 2,
+        borderBottomWidth: 2,
+        borderTopColor: colors.secondaryText,
+        borderBottomColor: colors.secondaryText,
     },
 });

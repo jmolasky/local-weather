@@ -1,18 +1,20 @@
 import { StyleSheet, Text, View, Image } from "react-native";
-import { getDay } from "./functions";
-import colors from "./config/colors";
+import { getDay } from "../functions";
+import colors from "../config/colors";
+import AppText from "./AppText";
 
 export default function CurrentWeather({ current, daily }) {
     const day = getDay(current.dt);
     return (
         <View style={styles.container}>
             <View style={styles.center}>
-                <Text style={[styles.mainDescription, styles.primaryText]}>
+                <AppText style={styles.mainDescription}>
                     {current.weather[0].description}
-                </Text>
-                <Text style={[styles.mainTemp, styles.primaryText]}>
+                </AppText>
+
+                <AppText style={styles.mainTemp}>
                     {Math.round(current.temp)} &#x2109;
-                </Text>
+                </AppText>
                 <Image
                     source={{
                         uri: `http://openweathermap.org/img/wn/${current.weather[0].icon}@2x.png`,
@@ -22,14 +24,13 @@ export default function CurrentWeather({ current, daily }) {
                 />
             </View>
             <View style={styles.bar}>
-                <Text style={styles.primaryText}>{day} TODAY</Text>
+                <AppText>{day} TODAY</AppText>
                 <View style={styles.highLow}>
-                    <Text style={styles.primaryText}>
-                        {Math.round(daily.temp.max)} &#x2109;
-                    </Text>
-                    <Text style={styles.secondaryText}>
+                    <AppText>{Math.round(daily.temp.max)} &#x2109;</AppText>
+
+                    <AppText style={styles.secondaryText}>
                         {Math.round(daily.temp.min)} &#x2109;
-                    </Text>
+                    </AppText>
                 </View>
             </View>
         </View>
@@ -37,31 +38,26 @@ export default function CurrentWeather({ current, daily }) {
 }
 
 const styles = StyleSheet.create({
-    primaryText: {
-        color: colors.primaryText,
-    },
     secondaryText: {
         color: colors.secondaryText,
     },
     bar: {
         flexDirection: "row",
         justifyContent: "space-between",
+        borderBottomWidth: 2,
+        borderBottomColor: colors.secondaryText,
+        paddingBottom: 10,
+        marginBottom: 0,
     },
     center: {
         alignSelf: "center",
     },
     container: {
         margin: 10,
-        borderWidth: 2,
-        borderColor: "orange",
-    },
-    description: {
-        textAlign: "center",
+        marginBottom: 0,
     },
     highLow: {
         flexDirection: "row",
-        borderWidth: 2,
-        borderColor: "purple",
         width: 120,
         justifyContent: "space-between",
     },
@@ -74,7 +70,7 @@ const styles = StyleSheet.create({
     },
     mainImage: {
         alignSelf: "center",
-        width: 75,
-        height: 75,
+        width: 100,
+        height: 100,
     },
 });
