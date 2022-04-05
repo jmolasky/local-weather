@@ -6,14 +6,13 @@ import {
     View,
     SafeAreaView,
     SectionList,
-    ScrollView,
-    RefreshControl,
     Image,
     FlatList,
 } from "react-native";
 import * as Location from "expo-location";
 import { getWeather, wait, getTime, getDay } from "./functions";
 import CurrentWeather from "./CurrentWeather";
+import colors from "./config/colors";
 
 export default function App() {
     const [address, setAddress] = useState(null);
@@ -143,41 +142,45 @@ export default function App() {
             <StatusBar style="auto" />
             <SafeAreaView style={{ flex: 1 }}>
                 <Text style={styles.city}>{text}</Text>
-                <CurrentWeather
-                    current={weather.current}
-                    daily={weather.daily[0]}
-                />
                 {weather && (
-                    <SectionList
-                        refreshing={refreshing}
-                        onRefresh={onRefresh}
-                        contentContainerStyle={{ paddingHorizontal: 10 }}
-                        stickySectionHeadersEnabled={false}
-                        sections={SECTIONS}
-                        renderSectionHeader={({ section }) => (
-                            <>
-                                <Text style={styles.sectionHeader}>
-                                    {section.title}
-                                </Text>
-                                {section.horizontal ? (
-                                    <FlatList
-                                        horizontal
-                                        data={section.data}
-                                        renderItem={({ item }) => (
-                                            <HourlyListItem item={item} />
-                                        )}
-                                        showsHorizontalScrollIndicator={false}
-                                    />
-                                ) : null}
-                            </>
-                        )}
-                        renderItem={({ item, section }) => {
-                            if (section.horizontal) {
-                                return null;
-                            }
-                            return <DailyListItem item={item} />;
-                        }}
-                    />
+                    <>
+                        <CurrentWeather
+                            current={weather.current}
+                            daily={weather.daily[0]}
+                        />
+                        <SectionList
+                            refreshing={refreshing}
+                            onRefresh={onRefresh}
+                            contentContainerStyle={{ paddingHorizontal: 10 }}
+                            stickySectionHeadersEnabled={false}
+                            sections={SECTIONS}
+                            renderSectionHeader={({ section }) => (
+                                <>
+                                    <Text style={styles.sectionHeader}>
+                                        {section.title}
+                                    </Text>
+                                    {section.horizontal ? (
+                                        <FlatList
+                                            horizontal
+                                            data={section.data}
+                                            renderItem={({ item }) => (
+                                                <HourlyListItem item={item} />
+                                            )}
+                                            showsHorizontalScrollIndicator={
+                                                false
+                                            }
+                                        />
+                                    ) : null}
+                                </>
+                            )}
+                            renderItem={({ item, section }) => {
+                                if (section.horizontal) {
+                                    return null;
+                                }
+                                return <DailyListItem item={item} />;
+                            }}
+                        />
+                    </>
                 )}
             </SafeAreaView>
         </View>
@@ -185,13 +188,19 @@ export default function App() {
 }
 
 const styles = StyleSheet.create({
+    primaryText: {
+        color: colors.primaryText,
+    },
+    secondaryText: {
+        color: colors.secondaryText,
+    },
     city: {
         fontSize: 36,
         textAlign: "center",
     },
     container: {
         flex: 1,
-        backgroundColor: "#fff",
+        backgroundColor: "#5ba9e1",
     },
     descContainer: {
         width: 110,
@@ -201,7 +210,7 @@ const styles = StyleSheet.create({
     sectionHeader: {
         fontWeight: "800",
         fontSize: 18,
-        color: "#f4f4f4",
+        color: colors.primaryText,
         marginTop: 20,
         marginBottom: 5,
     },
@@ -221,19 +230,6 @@ const styles = StyleSheet.create({
         width: 75,
         height: 75,
     },
-    itemText: {
-        color: "#ffffff7f",
-        marginTop: 5,
-    },
-    text: {
-        color: "white",
-    },
-    scrollView: {
-        flex: 1,
-        backgroundColor: "#3ae9cf",
-        alignItems: "center",
-        justifyContent: "center",
-    },
     verticalItem: {
         width: "100%",
         flexDirection: "row",
@@ -241,8 +237,5 @@ const styles = StyleSheet.create({
         alignItems: "center",
         borderWidth: 2,
         borderColor: "blue",
-    },
-    weekday: {
-        marginBottom: 10,
     },
 });
