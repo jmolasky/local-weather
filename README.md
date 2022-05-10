@@ -22,6 +22,7 @@ Users can pull down to refresh the page, which triggers another location lookup/
 ## Screenshots
 
 ![The App Live](https://i.imgur.com/cFjNCkOl.png)
+![Gif of App](./assets/local_weather.gif)
 
 ## Unsolved Problems
 
